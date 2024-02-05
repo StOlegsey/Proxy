@@ -21,11 +21,11 @@ public class Connection {
     public ResponseEntity<String> makeRequest(String body,
                                               HttpMethod method,
                                               HttpServletRequest request){
-        HttpHeaders headers = new HttpHeaders();    //getHeaders(request);
-        System.out.println("HEADERS default: "+headers);
+        HttpHeaders headers = new HttpHeaders();//getHeaders(request);
+        //System.out.println("HEADERS default: "+headers);
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
-
         ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
+        System.out.println("Made a request to: "+url);
 
         return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(response.getBody());
     }
@@ -33,6 +33,9 @@ public class Connection {
     private HttpHeaders getHeaders(HttpServletRequest request){
         HttpHeaders headers = new HttpHeaders();
         Enumeration<String> headerNames = request.getHeaderNames();
+
+        if(headerNames==null){
+            return headers;}
 
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
