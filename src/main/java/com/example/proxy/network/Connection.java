@@ -24,7 +24,7 @@ public class Connection {
     }
 
     public ResponseEntity<byte[]> makeRequest(String body,
-                                              HttpMethod method,
+                                              String method,
                                               Map<String, String> additionalParams,
                                               HttpServletRequest request){
         HttpHeaders headers = getHeaders(request);
@@ -41,7 +41,7 @@ public class Connection {
         try {
             ResponseEntity<byte[]> response = restTemplate.exchange(
                     uriBuilder.toUriString(),
-                    method,
+                    HttpMethod.valueOf(method),
                     entity,
                     byte[].class);
 
