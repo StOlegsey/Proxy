@@ -11,32 +11,41 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Objects;
+import java.util.zip.GZIPInputStream;
 
 public class Connection {
     private final String  url;
+    private String body;
+    private String method;
+    Map<String, String> additionalParams;
+    HttpServletRequest request;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Connection(String url) {
+    public Connection(String url, String body, String method, Map<String, String> additionalParams, HttpServletRequest request) {
         this.url = url;
+        this.body = body;
+        this.method = method;
+        this.additionalParams = additionalParams;
+        this.request = request;
     }
 
-    public ResponseEntity<byte[]> makeRequest(String body,
-                                              String method,
-                                              Map<String, String> additionalParams,
-                                              HttpServletRequest request){
+    public ResponseEntity<byte[]> makeRequest(){
         HttpHeaders headers = getHeaders(request);
         //System.out.println("HEADERS default: "+headers);
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
         for (Map.Entry<String, String> entry: additionalParams.entrySet()) {
-                uriBuilder.queryParam(entry.getKey(), entry.getValue());
+                if(!entry.getKey().equals("url")) uriBuilder.queryParam(entry.getKey(), entry.getValue());
             }
 
-        System.out.println("Making a request to: "+uriBuilder.toUriString());
+        //System.out.println("Making a request to: "+uriBuilder.toUriString());
 
         try {
             ResponseEntity<byte[]> response = restTemplate.exchange(
@@ -46,7 +55,6 @@ public class Connection {
                     byte[].class);
 
             return ResponseEntity.status(response.getStatusCode())
-                    .contentType(Objects.requireNonNull(response.getHeaders().getContentType()))
                     .headers(response.getHeaders())
                     .body(response.getBody());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -76,7 +84,8 @@ public class Connection {
                 headers.add(headerName, value);
             }
         }
-        System.out.println("HEADERS custom: "+headers);
+        //System.out.println("HEADERS custom: "+headers);
         return headers;
     }
+
 }
