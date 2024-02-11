@@ -32,6 +32,7 @@ public class ResponseBuilder {
             while ((len = bris.read(buffer)) > 0) {
                 bos.write(buffer, 0, len);
             }
+            //return new String(bos.toByteArray(), StandardCharsets.UTF_8);
             return this;
         }
     }
