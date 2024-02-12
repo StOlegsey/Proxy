@@ -1,7 +1,6 @@
 package com.example.proxy.network;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,13 +10,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.Objects;
-import java.util.zip.GZIPInputStream;
 
 public class Connection {
     private final String  url;
@@ -45,7 +39,7 @@ public class Connection {
                 if(!entry.getKey().equals("url")) uriBuilder.queryParam(entry.getKey(), entry.getValue());
             }
 
-        //System.out.println("Making a request to: "+uriBuilder.toUriString());
+        System.out.println("Making a request to: "+uriBuilder.toUriString());
 
         try {
             ResponseEntity<byte[]> response = restTemplate.exchange(
