@@ -23,8 +23,10 @@ public class MainController implements MainControllerInterface{
         if (url != null) InitUrl = url;
         Connection connection = new Connection(InitUrl + request.getRequestURI(), body, request.getMethod(), additionalParams, request);
         System.out.println("Requesting " + InitUrl + request.getRequestURI());
-        ResponseDirector director = new ResponseDirector(builder, connection);
+        ResponseDirector director = new ResponseDirector(builder, connection, (InitUrl + request.getRequestURI()));
 
-        return director.buildResponseEntity();
+        ResponseEntity<byte[]> response = director.buildResponseEntity();
+        System.out.println("Returning response for "+((InitUrl + request.getRequestURI())));
+        return response;
     }
 }

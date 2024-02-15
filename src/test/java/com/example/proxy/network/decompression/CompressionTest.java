@@ -3,6 +3,8 @@ package com.example.proxy.network.decompression;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -12,7 +14,7 @@ import static org.junit.Assert.*;
 public class CompressionTest {
 
     @Test
-    public void checkCompressions() throws IOException {
+    public void checkByteCompressions() throws IOException {
         CompressionStrategy compressionStrategy = new BrCompressionStrategy();
         String testHtml = "<!doctype html>\n" +
                 "<html itemscope=\"\" itemtype=\"http://schema.org/WebPage\" lang=\"ru\">\n" +
@@ -69,9 +71,38 @@ public class CompressionTest {
                 "                    var e = \"\";\n" +
                 "                    -1 === b.search(\"&ei=\") && (e = \"&ei=\" + p(d),";
 
-        byte[] compressed = compressionStrategy.compress(testHtml, StandardCharsets.UTF_8);
-        String decompressed = compressionStrategy.decompress(compressed,StandardCharsets.UTF_8);
+        File file = new File("D:Trash/googleResponseByte.bin");
+        byte[] googleBody = new byte[(int) file.length()];
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(googleBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(compressionStrategy.decompress(googleBody, StandardCharsets.UTF_8));
 
-        assertEquals(testHtml, decompressed);
+        String decompressed = compressionStrategy.decompress(googleBody,StandardCharsets.UTF_8);
+        byte[] recompressed = compressionStrategy.compress(decompressed, StandardCharsets.UTF_8);
+
+        assertArrayEquals(googleBody, recompressed);
     }
+
+    @Test
+    public void checkStringCompressions() throws IOException {
+        CompressionStrategy compressionStrategy = new BrCompressionStrategy();
+
+        File file = new File("D:Trash/googleResponseByte.bin");
+        byte[] googleBody = new byte[(int) file.length()];
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(googleBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String decompressed = compressionStrategy.decompress(googleBody,StandardCharsets.UTF_8);
+        byte[] compressed = compressionStrategy.compress(decompressed, StandardCharsets.UTF_8);
+        String recompressed = compressionStrategy.decompress(compressed,StandardCharsets.UTF_8);
+
+        assertEquals(recompressed, decompressed);
+    }
+
 }

@@ -17,6 +17,7 @@ public class GzipCompressionStrategy implements CompressionStrategy {
         while ((len = gzip.read(buffer)) > 0) {
             bos.write(buffer, 0, len);
         }
+        System.out.println("GZip Decompression Successful");
         return bos.toString(charset);
     }
 
@@ -28,6 +29,7 @@ public class GzipCompressionStrategy implements CompressionStrategy {
         gzip.write(decompressedData.getBytes(charset));
         gzip.flush();
         gzip.close();
+        System.out.println("GZip Compression Successful");
         return baos.toByteArray();
     }
 }

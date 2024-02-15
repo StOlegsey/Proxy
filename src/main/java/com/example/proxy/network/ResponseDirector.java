@@ -14,10 +14,12 @@ public class ResponseDirector {
 
     private final ResponseBuilder builder;
     private final Connection connection;
+    private final String requestedUri;
 
-    public ResponseDirector(ResponseBuilder builder, Connection connection) {
+    public ResponseDirector(ResponseBuilder builder, Connection connection, String requestedUri) {
         this.builder = builder;
         this.connection = connection;
+        this.requestedUri = requestedUri;
     }
 
     public ResponseEntity<byte[]> buildResponseEntity(){
@@ -25,30 +27,27 @@ public class ResponseDirector {
         ResponseEntity<byte[]> initialResponse = connection.makeRequest();
         String contentEncoding = initialResponse.getHeaders().getFirst("Content-Encoding");
         String contentType = initialResponse.getHeaders().getFirst("Content-Type");
-        System.out.println("Response Content-type: "+contentType+
+        System.out.println("Response from: "+requestedUri+
+                "\nResponse Content-type: "+contentType+
                 "\nResponse Content-encoding: "+ contentEncoding);
 
-        if(contentType.startsWith("text")) {
+        if(contentEncoding!=null && !contentEncoding.equals("") && (contentType.startsWith("text/") || contentType.contains("json") || contentType.contains("xml"))) {
             try {
-                if(contentEncoding!=null && !contentEncoding.equals("")) {
                     return builder
-                            .setResponse(initialResponse, true)
+                            .setResponse(initialResponse, requestedUri)
                             .decompress()
-                            //.changeURLs()
+                            .changeURLs()
+                            .compress()
+                            .changeHeaders()
                             .build();
-                }
-                else {
-                    return builder
-                            .setResponse(initialResponse, false)
-                            .build();
-                }
+
             } catch (IOException e) {
                 System.out.println("Error in response builder: " + e);
                 return initialResponse;
             }
         }
         else {
-            System.out.println("Returning image; No builder usage");
+            System.out.println("Returning image from "+requestedUri+"; No builder usage");
             return initialResponse;
         }
     }
