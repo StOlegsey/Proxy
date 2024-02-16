@@ -1,6 +1,7 @@
 package com.example.proxy.network;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Enumeration;
 import java.util.Map;
 
+@Slf4j
 public class Connection {
     private final String  url;
     private String body;
@@ -39,7 +41,7 @@ public class Connection {
                 if(!entry.getKey().equals("url")) uriBuilder.queryParam(entry.getKey(), entry.getValue());
             }
 
-        System.out.println("Making a request to: "+uriBuilder.toUriString());
+        log.info("Making a request to: "+uriBuilder.toUriString());
 
         try {
             ResponseEntity<byte[]> response = restTemplate.exchange(

@@ -4,11 +4,14 @@ import com.example.proxy.network.Connection;
 import com.example.proxy.network.ResponseBuilder;
 import com.example.proxy.network.ResponseDirector;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
 import java.util.Map;
 
 @Controller
+@Slf4j
 public class MainController implements MainControllerInterface{
     private String InitUrl = "localhost:8080";
     private final ResponseBuilder builder = new ResponseBuilder();
@@ -18,15 +21,21 @@ public class MainController implements MainControllerInterface{
 
     public ResponseEntity<byte[]> proxyRequest (String body,
                                                String url,
+                                               Boolean referred,
                                                Map<String, String> additionalParams,
                                                HttpServletRequest request) {
-        if (url != null) InitUrl = url;
-        Connection connection = new Connection(InitUrl + request.getRequestURI(), body, request.getMethod(), additionalParams, request);
-        System.out.println("Requesting " + InitUrl + request.getRequestURI());
-        ResponseDirector director = new ResponseDirector(builder, connection, (InitUrl + request.getRequestURI()));
+
+        if (url != null && !referred) InitUrl = url;
+        String currentUrl = InitUrl + request.getRequestURI();
+
+        if (referred) currentUrl = url;
+
+        Connection connection = new Connection(currentUrl, body, request.getMethod(), additionalParams, request);
+        log.info("Requesting " + currentUrl);
+        ResponseDirector director = new ResponseDirector(builder, connection, (currentUrl));
 
         ResponseEntity<byte[]> response = director.buildResponseEntity();
-        System.out.println("Returning response for "+((InitUrl + request.getRequestURI())));
+        log.info("Returning response for "+(currentUrl));
         return response;
     }
 }

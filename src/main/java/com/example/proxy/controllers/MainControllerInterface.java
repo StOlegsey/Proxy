@@ -13,6 +13,7 @@ public interface MainControllerInterface {
     @RequestMapping(value = "/**")
     public ResponseEntity<byte[]> proxyRequest(@RequestBody(required = false) String body,
                                                @RequestParam(required = false) String url,
+                                               @RequestParam(required = false, defaultValue = "false") Boolean referred,
                                                @RequestParam Map<String, String> additionalParams,
                                                HttpServletRequest request);
 }

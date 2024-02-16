@@ -1,11 +1,14 @@
 package com.example.proxy.network.decompression;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.zip.GZIPOutputStream;
 
+@Slf4j
 public class GzipCompressionStrategy implements CompressionStrategy {
     @Override
     public String decompress(byte[] compressedData, Charset charset) throws IOException {
@@ -17,7 +20,7 @@ public class GzipCompressionStrategy implements CompressionStrategy {
         while ((len = gzip.read(buffer)) > 0) {
             bos.write(buffer, 0, len);
         }
-        System.out.println("GZip Decompression Successful");
+        log.info("GZip Decompression Successful");
         return bos.toString(charset);
     }
 
@@ -29,7 +32,7 @@ public class GzipCompressionStrategy implements CompressionStrategy {
         gzip.write(decompressedData.getBytes(charset));
         gzip.flush();
         gzip.close();
-        System.out.println("GZip Compression Successful");
+        log.info("GZip Compression Successful");
         return baos.toByteArray();
     }
 }

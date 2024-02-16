@@ -1,15 +1,11 @@
 package com.example.proxy.network;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.MediaType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Objects;
 
+@Slf4j
 public class ResponseDirector {
 
     private final ResponseBuilder builder;
@@ -27,9 +23,9 @@ public class ResponseDirector {
         ResponseEntity<byte[]> initialResponse = connection.makeRequest();
         String contentEncoding = initialResponse.getHeaders().getFirst("Content-Encoding");
         String contentType = initialResponse.getHeaders().getFirst("Content-Type");
-        System.out.println("Response from: "+requestedUri+
-                "\nResponse Content-type: "+contentType+
-                "\nResponse Content-encoding: "+ contentEncoding);
+        log.info(initialResponse.getStatusCode()+"; Response from: "+requestedUri+
+                "\n\tResponse Content-type: "+contentType+
+                "\n\tResponse Content-encoding: "+ contentEncoding);
 
         if(contentEncoding!=null && !contentEncoding.equals("") && (contentType.startsWith("text/") || contentType.contains("json") || contentType.contains("xml"))) {
             try {
@@ -42,12 +38,12 @@ public class ResponseDirector {
                             .build();
 
             } catch (IOException e) {
-                System.out.println("Error in response builder: " + e);
+                log.info("Error in response builder: " + e);
                 return initialResponse;
             }
         }
         else {
-            System.out.println("Returning image from "+requestedUri+"; No builder usage");
+            log.info("Returning image from "+requestedUri+"; No builder usage");
             return initialResponse;
         }
     }
