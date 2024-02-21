@@ -2,6 +2,8 @@ package com.example.proxy.services;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.regex.Matcher;
+
 public class ResponseChangeURLTest {
 
     @Test
@@ -10,5 +12,58 @@ public class ResponseChangeURLTest {
         testMsg.replaceAll("https?://", "http://localhost:8080/?url=https://");
         System.out.println(testMsg);
         System.out.println(testMsg.replaceAll("https?://", "http://localhost:8080/?url=https://"));
+    }
+
+    @Test
+    public void changeURLsWithScript(){
+        String testMsg = """
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <title>Your Page Title</title>
+                    <!-- other head elements (stylesheets, meta tags, etc.) -->
+                </head>
+                <body>
+                    <!-- Your page content here (links, images, etc.) -->
+
+                    <script>
+                        SOMESCRIPT
+                        });
+                    </script>
+                </body>
+                </html>""";
+        System.out.println(testMsg);
+        String jsScript = """ 
+                <script>document.addEventListener("DOMContentLoaded", function() {
+                  var newUrl = "http://localhost:8080/"; // Your defined URL here
+
+                  // Change href for all <a> tags
+                  document.querySelectorAll('a').forEach(function(a) {
+                    a.href = newUrl;
+                  });
+
+                  // Change src for all <img>, <script>, and <iframe> tags
+                  document.querySelectorAll('img, script, iframe').forEach(function(el) {
+                    el.src = newUrl;
+                  });
+
+                  // Optionally, change action for all <form> tags
+                  document.querySelectorAll('form').forEach(function(form) {
+                    form.action = newUrl;
+                  });
+
+                  // Change URLs in inline styles, if any (e.g., background-image)
+                  document.querySelectorAll('[style]').forEach(function(el) {
+                    var originalStyle = el.getAttribute('style');
+                    var modifiedStyle = originalStyle.replace(/url\\(['"]?(.*?)['"]?\\)/g, `url('${newUrl}')`);
+                    el.setAttribute('style', modifiedStyle);
+                  });
+
+                  // Note: This script doesn't handle URLs set via JavaScript or in CSS files.
+                });</script>
+                </body>""";
+        jsScript = Matcher.quoteReplacement(jsScript);
+        testMsg = testMsg.replaceAll("</body>", jsScript);
+        System.out.println(testMsg);
     }
 }

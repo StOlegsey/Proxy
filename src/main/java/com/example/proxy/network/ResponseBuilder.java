@@ -53,7 +53,7 @@ public class ResponseBuilder {
 
         boolean write = uri.equals("https://www.google.com/");
 
-        decompressedBody = ResponseChangeURL.changeUrls(decompressedBody, write);
+        decompressedBody = ResponseChangeURL.changeUrlsWithJs(decompressedBody, write);
         return this;
     }
 
