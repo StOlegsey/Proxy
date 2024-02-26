@@ -2,12 +2,14 @@ package com.example.proxy.network.decompression;
 import com.aayushatharva.brotli4j.Brotli4jLoader;
 import com.aayushatharva.brotli4j.encoder.Encoder;
 import org.brotli.dec.BrotliInputStream;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+@Component("br")
 public class BrCompressionStrategy implements CompressionStrategy {
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.proxy.network.decompression;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.zip.GZIPOutputStream;
 
 @Slf4j
+@Component("gzip")
 public class GzipCompressionStrategy implements CompressionStrategy {
     @Override
     public String decompress(byte[] compressedData, Charset charset) throws IOException {

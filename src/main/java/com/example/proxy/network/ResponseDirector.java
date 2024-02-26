@@ -1,19 +1,22 @@
 package com.example.proxy.network;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Slf4j
+@Service
 public class ResponseDirector {
-
-    private final ResponseBuilder builder;
+    @Autowired
+    private ResponseBuilder builder;
     private final Connection connection;
     private final String requestedUri;
 
-    public ResponseDirector(ResponseBuilder builder, Connection connection, String requestedUri) {
-        this.builder = builder;
+    public ResponseDirector(Connection connection, String requestedUri) {
         this.connection = connection;
         this.requestedUri = requestedUri;
     }

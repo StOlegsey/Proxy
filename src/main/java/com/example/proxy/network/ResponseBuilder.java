@@ -2,11 +2,15 @@ package com.example.proxy.network;
 
 import com.example.proxy.network.decompression.BrCompressionStrategy;
 import com.example.proxy.network.decompression.CompressionStrategy;
+import com.example.proxy.network.decompression.CompressionStrategyFactory;
 import com.example.proxy.network.decompression.GzipCompressionStrategy;
 import com.example.proxy.services.ResponseChangeURL;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -20,6 +24,11 @@ public class ResponseBuilder {
     private String decompressedBody;
     private CompressionStrategy compression;
     private String uri;
+    private CompressionStrategyFactory compressionStrategyFactory;
+
+    public ResponseBuilder(CompressionStrategyFactory compressionStrategyFactory) {
+        this.compressionStrategyFactory = compressionStrategyFactory;
+    }
 
     public ResponseBuilder setResponse(ResponseEntity<byte[]> response, String uri) {
         this.response = response;
@@ -28,18 +37,9 @@ public class ResponseBuilder {
         String contentEncoding = response.getHeaders().getFirst("Content-Encoding");
         charset = Objects.requireNonNull(response.getHeaders().getContentType()).getCharset();
 
-        //Возможно стоит сделать все decompressionStrategy как Бины и засунуть их в Map как value,
-        //вместо key поставить типы компресии и оттуда уже вытаскивать нужный по ключу,
-        //либо можно создать аннотацию над всеми бинами с типом компрессии и найти тот, над которым наш тип
-
         log.info("Entering the builder for "+uri);
 
-        if(Objects.equals(contentEncoding, "br")) compression = new BrCompressionStrategy();
-        else if (Objects.equals(contentEncoding, "gzip")) compression = new GzipCompressionStrategy();
-        else {
-            log.info("Unknown compression");
-            return this;
-        }
+        compression = compressionStrategyFactory.getCompression(contentEncoding);
         return this;
     }
     public ResponseBuilder decompress() throws IOException {
@@ -53,7 +53,7 @@ public class ResponseBuilder {
 
         boolean write = uri.equals("https://www.google.com/");
 
-        decompressedBody = ResponseChangeURL.changeUrlsWithJs(decompressedBody, write);
+        decompressedBody = ResponseChangeURL.changeUrls(decompressedBody, write);
         return this;
     }
 

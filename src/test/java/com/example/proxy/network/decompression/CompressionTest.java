@@ -1,7 +1,11 @@
 package com.example.proxy.network.decompression;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,8 +14,15 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.*;
 
-@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {CompressionStrategyFactory.class, CompressionStrategy.class, GzipCompressionStrategy.class, BrCompressionStrategy.class})
 public class CompressionTest {
+
+    @Autowired
+    CompressionStrategyFactory compressionStrategyFactory;
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     @Test
     public void checkByteCompressions() throws IOException {
@@ -103,6 +114,11 @@ public class CompressionTest {
         String recompressed = compressionStrategy.decompress(compressed,StandardCharsets.UTF_8);
 
         assertEquals(recompressed, decompressed);
+    }
+
+    @Test
+    public void checkBeanCompression(){
+        assertEquals(applicationContext.getBean("br", BrCompressionStrategy.class), compressionStrategyFactory.getCompression("br"));
     }
 
 }

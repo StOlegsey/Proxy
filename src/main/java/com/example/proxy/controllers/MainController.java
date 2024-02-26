@@ -14,7 +14,6 @@ import java.util.Map;
 @Slf4j
 public class MainController implements MainControllerInterface{
     private String InitUrl = "localhost:8080";
-    private final ResponseBuilder builder = new ResponseBuilder();
 
     //На будущее: When a request is received by the Spring DispatcherServlet, it is processed by the Spring filter chain.
     //Each filter in the chain can modify the request or response before it is passed to the next filter or to the servlet.
@@ -32,7 +31,7 @@ public class MainController implements MainControllerInterface{
 
         Connection connection = new Connection(currentUrl, body, request.getMethod(), additionalParams, request);
         log.info("Requesting " + currentUrl);
-        ResponseDirector director = new ResponseDirector(builder, connection, (currentUrl));
+        ResponseDirector director = new ResponseDirector(connection, currentUrl);
 
         ResponseEntity<byte[]> response = director.buildResponseEntity();
         log.info("Returning response for "+(currentUrl));
