@@ -1,6 +1,7 @@
 package com.example.proxy.network.decompression;
 import com.aayushatharva.brotli4j.Brotli4jLoader;
 import com.aayushatharva.brotli4j.encoder.Encoder;
+import lombok.extern.slf4j.Slf4j;
 import org.brotli.dec.BrotliInputStream;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 @Component("br")
+@Slf4j
 public class BrCompressionStrategy implements CompressionStrategy {
 
     @Override
@@ -31,6 +33,7 @@ public class BrCompressionStrategy implements CompressionStrategy {
         while ((read = brotliInput.read(buffer)) != -1) {
             baos.write(buffer, 0, read);
         }
+        log.info("Br Decompression Successful");
         return baos.toString(charset);
 
     }

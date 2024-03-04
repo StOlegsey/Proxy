@@ -1,27 +1,19 @@
 package com.example.proxy.network;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Slf4j
-@Service
 public class ResponseDirector {
-    @Autowired
-    private ResponseBuilder builder;
-    private final Connection connection;
-    private final String requestedUri;
 
-    public ResponseDirector(Connection connection, String requestedUri) {
-        this.connection = connection;
-        this.requestedUri = requestedUri;
+    private ResponseBuilder builder;
+    public ResponseDirector(ResponseBuilder builder) {
+        this.builder = builder;
     }
 
-    public ResponseEntity<byte[]> buildResponseEntity(){
+    public ResponseEntity<byte[]> buildResponseEntity(Connection connection, String requestedUri){
 
         ResponseEntity<byte[]> initialResponse = connection.makeRequest();
         String contentEncoding = initialResponse.getHeaders().getFirst("Content-Encoding");

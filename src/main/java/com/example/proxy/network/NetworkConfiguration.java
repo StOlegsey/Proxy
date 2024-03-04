@@ -13,10 +13,11 @@ public class NetworkConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
 
-    /*@Bean
-    public ResponseDirector responseDirector(ResponseBuilder builder, Connection connection) {
-        return new ResponseDirector(responseBuilder(), connection, "someRequestedUri");
-    }*/
+    @Bean
+    @Scope(value = "prototype")
+    public ResponseDirector responseDirector() {
+        return new ResponseDirector(responseBuilder());
+    }
 
     @Bean
     public CompressionStrategyFactory compressionStrategyFactory(){
